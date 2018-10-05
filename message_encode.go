@@ -68,18 +68,8 @@ func (m *Message) buffer() *bytes.Buffer {
 
 			if v != "" {
 				buf.WriteByte('=')
-
-				// If the value doesn't have a character that needs escaping,
-				// then don't run the Replacer, as it appears to do a lot of
-				// work even when replacing nothing. The order of chars to
-				// check is generally ordered by how often those characters
-				// are used in a tag.
-				if containsEscapable(v) {
-					// buf is a bytes.Buffer, so writing to it cannot fail.
-					tagEscape.WriteString(buf, v) //nolint:errcheck
-				} else {
-					buf.WriteString(v)
-				}
+				// buf is a bytes.Buffer, so writing to it cannot fail.
+				tagEscapeWrite(buf, v) //nolint:errcheck
 			}
 		}
 

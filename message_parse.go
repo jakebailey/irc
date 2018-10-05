@@ -127,14 +127,7 @@ func (m *Message) parseTags(raw string) (string, error) {
 		k := pair[:i]
 		v := pair[i+1:]
 
-		// Check ahead of time to see if the string contains something that
-		// needs to be unescaped. This is faster and much more allocation
-		// efficient than always running the replacer.
-		if containsUnescapeable(v) {
-			v = tagUnescape.Replace(v)
-		}
-
-		m.Tags[k] = v
+		m.Tags[k] = tagUnescape(v)
 	}
 
 	return raw, nil

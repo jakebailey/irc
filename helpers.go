@@ -1,10 +1,8 @@
 package irc
 
-import "strings"
-
-var (
-	tagEscape   = strings.NewReplacer(";", `\:`, " ", `\s`, "\r", `\r`, "\n", `\n`, "\\", `\\`)
-	tagUnescape = strings.NewReplacer(`\:`, ";", `\s`, " ", `\r`, "\r", `\n`, "\n", `\\`, "\\")
+import (
+	"io"
+	"strings"
 )
 
 // Hand written string.Fields, much faster than string.FieldsFunc.
@@ -39,6 +37,40 @@ func stringFields(s string, sep byte) []string {
 	}
 
 	return out
+}
+
+var (
+	tagEscapeReplacer   = strings.NewReplacer(";", `\:`, " ", `\s`, "\r", `\r`, "\n", `\n`, "\\", `\\`)
+	tagUnescapeReplacer = strings.NewReplacer(`\:`, ";", `\s`, " ", `\r`, "\r", `\n`, "\n", `\\`, "\\")
+)
+
+func tagUnescape(s string) string {
+	// Check ahead of time to see if the string contains something that
+	// needs to be unescaped. This is faster and much more allocation
+	// efficient than always running the replacer.
+	if containsUnescapeable(s) {
+		return tagUnescapeReplacer.Replace(s)
+	}
+	return s
+}
+
+func tagEscape(s string) string {
+	if containsEscapable(s) {
+		return tagEscapeReplacer.Replace(s)
+	}
+	return s
+}
+
+type stringWriter interface {
+	io.Writer
+	WriteString(string) (int, error)
+}
+
+func tagEscapeWrite(w stringWriter, s string) (n int, err error) {
+	if containsEscapable(s) {
+		return tagEscapeReplacer.WriteString(w, s)
+	}
+	return w.WriteString(s)
 }
 
 func containsEscapable(s string) bool {
