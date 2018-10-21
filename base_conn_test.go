@@ -80,3 +80,8 @@ func assertClose(t *testing.T, closer interface{ Close() error }) {
 	err := closer.Close()
 	assert.NoError(t, err)
 }
+
+func TestBaseConnDialErr(t *testing.T) {
+	_, err := BaseDial("")
+	assert.EqualError(t, err, "dial tcp: missing address")
+}
