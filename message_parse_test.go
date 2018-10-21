@@ -6,8 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//nolint:lll
-const rawTwitch = `@badges=;color=#1E90FF;display-name=atmao;emotes=360:39-46,48-55;id=b4bf69df-abf5-474b-9f1f-db441720bfb2;mod=0;room-id=54706574;subscriber=0;tmi-sent-ts=1493710725463;turbo=0;user-id=37012175;user-type= :atmao!atmao@atmao.tmi.twitch.tv PRIVMSG #joshog :I'm a scruncher but I'm ashamed off it FailFish FailFish`
+const (
+	rawTwitch = `@badges=;color=#1E90FF;display-name=atmao;emotes=360:39-46,48-55;id=b4bf69df-abf5-474b-9f1f-db441720bfb2;mod=0;room-id=54706574;subscriber=0;tmi-sent-ts=1493710725463;turbo=0;user-id=37012175;user-type= :atmao!atmao@atmao.tmi.twitch.tv PRIVMSG #joshog :I'm a scruncher but I'm ashamed off it FailFish FailFish` //nolint:lll
+	sadCrab   = `@test=>\:=\:< :jake!jake@jake.com PRIVMSG #jake :Hello, World!`
+)
 
 func TestParseEncodeGood(t *testing.T) {
 	t.Run("twitch message", func(t *testing.T) {
@@ -68,7 +70,7 @@ func TestParseEncodeGood(t *testing.T) {
 	})
 
 	t.Run("single tag", func(t *testing.T) {
-		raw := `@test=>\:=\:< :jake!jake@jake.com PRIVMSG #jake :Hello, World!`
+		raw := sadCrab
 		expected := &Message{
 			Tags: map[string]string{
 				"test": ">;=;<",
