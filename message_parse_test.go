@@ -34,6 +34,7 @@ func TestParseEncodeGood(t *testing.T) {
 			Command:  "PRIVMSG",
 			Params:   []string{"#joshog"},
 			Trailing: "I'm a scruncher but I'm ashamed off it FailFish FailFish",
+			Raw:      rawTwitch,
 		}
 
 		m, err := ParseMessage(rawTwitch)
@@ -53,6 +54,7 @@ func TestParseEncodeGood(t *testing.T) {
 			Command:  "PRIVMSG",
 			Params:   []string{"#jake"},
 			Trailing: "Hello, World!",
+			Raw:      raw,
 		}
 
 		m, err := ParseMessage(raw)
@@ -79,6 +81,7 @@ func TestParseEncodeGood(t *testing.T) {
 			Command:  "PRIVMSG",
 			Params:   []string{"#jake"},
 			Trailing: "Hello, World!",
+			Raw:      raw,
 		}
 
 		m, err := ParseMessage(raw)
@@ -106,6 +109,7 @@ func TestParseEncodeGood(t *testing.T) {
 			Command:  "PRIVMSG",
 			Params:   []string{"#jake"},
 			Trailing: "Hello, World!",
+			Raw:      raw,
 		}
 
 		m, err := ParseMessage(raw)
@@ -132,6 +136,7 @@ func TestParseEncodeGood(t *testing.T) {
 			Command:  "PRIVMSG",
 			Params:   []string{"#jake"},
 			Trailing: "Hello, World!",
+			Raw:      raw,
 		}
 
 		m, err := ParseMessage(raw)
@@ -157,6 +162,7 @@ func TestParseEncodeGood(t *testing.T) {
 		for _, raw := range possible {
 			m, err := ParseMessage(raw)
 			if assert.NoError(t, err) {
+				expected.Raw = raw
 				assert.Equal(t, expected, m, "messages should be equal")
 				assert.Contains(t, possible, m.String(), "encoded message should be possible")
 			}
@@ -170,6 +176,7 @@ func TestParseEncodeGood(t *testing.T) {
 				"a": "; \r\n\\",
 			},
 			Command: "TEST",
+			Raw:     raw,
 		}
 
 		m, err := ParseMessage(raw)
@@ -189,6 +196,7 @@ func TestParseEncodeGood(t *testing.T) {
 				m: Message{
 					Prefix:  Prefix{Name: "jake"},
 					Command: "FOO",
+					Raw:     `:jake FOO`,
 				},
 			},
 			{
@@ -196,6 +204,7 @@ func TestParseEncodeGood(t *testing.T) {
 				m: Message{
 					Prefix:  Prefix{Name: "jake", User: "bake"},
 					Command: "FOO",
+					Raw:     `:jake!bake FOO`,
 				},
 			},
 			{
@@ -203,6 +212,7 @@ func TestParseEncodeGood(t *testing.T) {
 				m: Message{
 					Prefix:  Prefix{Name: "jake", Host: "rake.bar"},
 					Command: "FOO",
+					Raw:     `:jake@rake.bar FOO`,
 				},
 			},
 			{
@@ -210,6 +220,7 @@ func TestParseEncodeGood(t *testing.T) {
 				m: Message{
 					Prefix:  Prefix{Name: "jake", User: "bake", Host: "rake.bar"},
 					Command: "FOO",
+					Raw:     `:jake!bake@rake.bar FOO`,
 				},
 			},
 		}
@@ -223,18 +234,20 @@ func TestParseEncodeGood(t *testing.T) {
 	})
 
 	t.Run("only command", func(t *testing.T) {
-		expected := &Message{Command: "TEST"}
+		raw := "TEST"
+		expected := &Message{Command: "TEST", Raw: raw}
 
-		m, err := ParseMessage("TEST")
+		m, err := ParseMessage(raw)
 		if assert.NoError(t, err) {
 			assert.Equal(t, expected, m, "messages should be equal")
 		}
 	})
 
 	t.Run("empty trailing", func(t *testing.T) {
-		expected := &Message{Command: "TEST", ForcedTrailing: true}
+		raw := "TEST :"
+		expected := &Message{Command: "TEST", ForcedTrailing: true, Raw: raw}
 
-		m, err := ParseMessage("TEST :")
+		m, err := ParseMessage(raw)
 		if assert.NoError(t, err) {
 			assert.Equal(t, expected, m, "messages should be equal")
 		}
@@ -264,15 +277,18 @@ func TestParseEncodeGood(t *testing.T) {
 			Command:  "COMMAND",
 			Params:   []string{"a", "b"},
 			Trailing: "trailing",
+			Raw:      "<PLACEHOLDER>",
 		}
 
-		err := m.Parse("@ PRIVMSG :")
+		raw := "@ PRIVMSG :"
+		err := m.Parse(raw)
 		assert.NoError(t, err)
 
 		expected := &Message{
 			Command:        "PRIVMSG",
 			ForcedTags:     true,
 			ForcedTrailing: true,
+			Raw:            raw,
 		}
 
 		assert.Equal(t, expected, m)

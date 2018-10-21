@@ -46,7 +46,9 @@ func parseMessage(raw string, m *Message) error {
 	// Easier and no slower to just zero out the message early.
 	// It may be better to not do this selectively and have an option to
 	// do something like keeping the tags map around (to be reused).
-	*m = Message{}
+	*m = Message{
+		Raw: raw,
+	}
 
 	var err error
 
