@@ -207,11 +207,7 @@ func (m *Message) parseParamsAndTrailing(raw string) {
 		m.ForcedTrailing = m.Trailing == ""
 	}
 
-	params := stringFields(raw, ' ')
-
-	if len(params) != 0 {
-		m.Params = params
-	}
+	m.Params = stringFields(raw, ' ')
 }
 
 func isSpace(r rune) bool {
