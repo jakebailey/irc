@@ -16,18 +16,22 @@ type BaseConn struct {
 
 var _ Conn = (*BaseConn)(nil)
 
-// BaseDial dials the provided address and returns a BaseConn.
+// NewBaseConn creates a new BaseConn from a net.Conn.
+func NewBaseConn(conn net.Conn) *BaseConn {
+	return &BaseConn{
+		conn:    conn,
+		scanner: bufio.NewScanner(conn),
+	}
+}
+
+// BaseDial is shorthand for calling net.Dial("tcp", addr) and calling
+// NewBaseConn on the returned net.Conn.
 func BaseDial(addr string) (*BaseConn, error) {
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
 		return nil, err
 	}
-
-	b := &BaseConn{
-		conn:    conn,
-		scanner: bufio.NewScanner(conn),
-	}
-	return b, nil
+	return NewBaseConn(conn), nil
 }
 
 // Close closes the underlying connection.
