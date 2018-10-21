@@ -6,6 +6,8 @@ import (
 )
 
 // Hand written string.Fields, much faster than string.FieldsFunc.
+// Note that unlike strings.Fields, if the returned slice would be empty, it
+// will be nil.
 func stringFields(s string, sep byte) []string {
 	if s == "" {
 		return nil
@@ -34,6 +36,10 @@ func stringFields(s string, sep byte) []string {
 
 	if s != "" {
 		out = append(out, s)
+	}
+
+	if len(out) == 0 {
+		return nil
 	}
 
 	return out
