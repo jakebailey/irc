@@ -303,6 +303,38 @@ func TestParseEncodeGood(t *testing.T) {
 	})
 }
 
+func TestParseError(t *testing.T) {
+	tests := []struct {
+		raw string
+		err error
+	}{
+		{
+			err: ErrEmptyMessage,
+		},
+		{
+			raw: "@",
+			err: ErrInvalidMessage,
+		},
+		{
+			raw: "@ ",
+			err: ErrInvalidMessage,
+		},
+		{
+			raw: ":",
+			err: ErrInvalidMessage,
+		},
+		{
+			raw: ": ",
+			err: ErrInvalidMessage,
+		},
+	}
+
+	for _, test := range tests {
+		_, err := ParseMessage(test.raw)
+		assert.Equal(t, test.err, err, "raw = `%s`", test.raw)
+	}
+}
+
 func BenchmarkParseMessageTwitch(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		if _, err := ParseMessage(rawTwitch); err != nil {

@@ -77,10 +77,7 @@ func parseMessage(raw string, m *Message) error {
 }
 
 func (m *Message) parseTags(raw string) (string, error) {
-	if raw == "" {
-		return "", ErrInvalidMessage
-	}
-
+	// raw is guaranteed to not be empty when this function is called.
 	if raw[0] != '@' {
 		return raw, nil
 	}
