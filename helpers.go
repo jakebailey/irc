@@ -54,13 +54,6 @@ func tagUnescape(s string) string {
 	return s
 }
 
-func tagEscape(s string) string {
-	if containsEscapable(s) {
-		return tagEscapeReplacer.Replace(s)
-	}
-	return s
-}
-
 type stringWriter interface {
 	io.Writer
 	WriteString(string) (int, error)
