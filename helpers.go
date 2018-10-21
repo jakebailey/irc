@@ -18,6 +18,13 @@ func stringFields(s string, sep byte) []string {
 		return []string{s}
 	}
 
+	s = fastTrim(s, sep)
+
+	count = strings.Count(s, string(sep))
+	if count == 0 {
+		return []string{s}
+	}
+
 	out := make([]string, 0, count+1)
 
 	for {
@@ -43,6 +50,37 @@ func stringFields(s string, sep byte) []string {
 	}
 
 	return out
+}
+
+// fastTrim is a faster implementation of trimming a string against a single
+// byte.
+func fastTrim(s string, b byte) string {
+	br := rune(b)
+
+	findLeft := true
+	left := 0
+
+	prevB := false
+	right := 0
+
+	for i, r := range s {
+		if findLeft {
+			if r != br {
+				left = i
+				findLeft = false
+			}
+			continue
+		}
+
+		if r != br && prevB {
+			prevB = false
+			right = i
+		} else {
+			prevB = true
+		}
+	}
+
+	return s[left : right+1]
 }
 
 var (
