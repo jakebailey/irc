@@ -52,7 +52,20 @@ func TestUnmarshalText(t *testing.T) {
 	assert.Equal(t, expected, &m)
 }
 
-func BenchmarkMessageEncode(b *testing.B) {
+func BenchmarkLen(b *testing.B) {
+	m, err := ParseMessage(rawTwitch)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.SetBytes(int64(len(rawTwitch)))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		m.Len()
+	}
+}
+
+func BenchmarkEncodeBuffer(b *testing.B) {
 	m, err := ParseMessage(rawTwitch)
 	if err != nil {
 		b.Fatal(err)
@@ -66,7 +79,7 @@ func BenchmarkMessageEncode(b *testing.B) {
 	}
 }
 
-func BenchmarkMessageWriteTo(b *testing.B) {
+func BenchmarkEncodeWriteTo(b *testing.B) {
 	m, err := ParseMessage(rawTwitch)
 	if err != nil {
 		b.Fatal(err)
@@ -79,7 +92,7 @@ func BenchmarkMessageWriteTo(b *testing.B) {
 	}
 }
 
-func BenchmarkMessageLen(b *testing.B) {
+func BenchmarkEncodeBytes(b *testing.B) {
 	m, err := ParseMessage(rawTwitch)
 	if err != nil {
 		b.Fatal(err)
@@ -88,6 +101,6 @@ func BenchmarkMessageLen(b *testing.B) {
 	b.SetBytes(int64(len(rawTwitch)))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.Len()
+		m.Bytes()
 	}
 }
