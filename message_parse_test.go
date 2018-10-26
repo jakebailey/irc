@@ -336,6 +336,8 @@ func TestParseError(t *testing.T) {
 }
 
 func BenchmarkParseMessageTwitch(b *testing.B) {
+	b.SetBytes(int64(len(rawTwitch)))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if _, err := ParseMessage(rawTwitch); err != nil {
 			b.Fatal(err)
@@ -346,6 +348,7 @@ func BenchmarkParseMessageTwitch(b *testing.B) {
 func BenchmarkParseMessageEscaping(b *testing.B) {
 	//nolint:lll
 	raw := `@badges=;color=#1E90FF;display-name=\:atmao;emotes=360:39-46,48-55;id=\\\rb4bf69df-abf5-474b-9f1f-db441720bfb2;mod=0;room-id=54706574;subscriber=0;tmi-sent-ts=1493710725463;turbo=0;user-id=37012175;user-type= :atmao!atmao@atmao.tmi.twitch.tv PRIVMSG #joshog :I'm a scruncher but I'm ashamed off it FailFish FailFish`
+	b.SetBytes(int64(len(raw)))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		if _, err := ParseMessage(raw); err != nil {

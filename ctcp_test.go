@@ -96,19 +96,32 @@ func TestEncodeCTCP(t *testing.T) {
 }
 
 func BenchmarkParseCTCP(b *testing.B) {
+	raw := "\x01ACTION says hi\x01"
+
+	b.SetBytes(int64(len(raw)))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		ParseCTCP("\x01ACTION says hi\x01") //nolint:errcheck
+		ParseCTCP(raw) //nolint:errcheck
 	}
 }
 
 func BenchmarkEncodeCTCP(b *testing.B) {
+	command := "ACTION"
+	args := "says hi"
+
+	b.SetBytes(int64(len(command) + len(args) + 3))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		EncodeCTCP("ACTION", "says hi") //nolint:errcheck
+		EncodeCTCP(command, args) //nolint:errcheck
 	}
 }
 
 func BenchmarkEncodeCTCPNoArgs(b *testing.B) {
+	command := "ACTION"
+
+	b.SetBytes(int64(len(command) + 2))
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		EncodeCTCP("ACTION", "") //nolint:errcheck
+		EncodeCTCP(command, "") //nolint:errcheck
 	}
 }

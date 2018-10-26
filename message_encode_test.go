@@ -58,6 +58,7 @@ func BenchmarkMessageEncode(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	b.SetBytes(int64(len(rawTwitch)))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		buf := m.buffer()
@@ -71,6 +72,7 @@ func BenchmarkMessageWriteTo(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	b.SetBytes(int64(len(rawTwitch)))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.WriteToWithNewline(ioutil.Discard) //nolint:errcheck
@@ -83,6 +85,7 @@ func BenchmarkMessageLen(b *testing.B) {
 		b.Fatal(err)
 	}
 
+	b.SetBytes(int64(len(rawTwitch)))
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m.Len()
