@@ -9,18 +9,13 @@ import (
 // Note that unlike strings.Fields, if the returned slice would be empty, it
 // will be nil.
 func stringFields(s string, sep byte) []string {
+	s = fastTrim(s, sep)
+
 	if s == "" {
 		return nil
 	}
 
 	count := strings.Count(s, string(sep))
-	if count == 0 {
-		return []string{s}
-	}
-
-	s = fastTrim(s, sep)
-
-	count = strings.Count(s, string(sep))
 	if count == 0 {
 		return []string{s}
 	}
@@ -55,6 +50,10 @@ func stringFields(s string, sep byte) []string {
 // fastTrim is a faster implementation of trimming a string against a single
 // byte.
 func fastTrim(s string, b byte) string {
+	if s == "" {
+		return ""
+	}
+
 	br := rune(b)
 
 	findLeft := true
@@ -67,20 +66,29 @@ func fastTrim(s string, b byte) string {
 		if findLeft {
 			if r != br {
 				left = i
+				right = i
 				findLeft = false
 			}
 			continue
 		}
 
-		if r != br && prevB {
-			prevB = false
+		if r == br {
+			if prevB {
+				continue
+			}
+			prevB = true
 			right = i
 		} else {
-			prevB = true
+			prevB = false
+			right = i
 		}
 	}
 
-	return s[left : right+1]
+	if !prevB {
+		right++
+	}
+
+	return s[left:right]
 }
 
 var (

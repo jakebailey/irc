@@ -301,6 +301,21 @@ func TestParseEncodeGood(t *testing.T) {
 		_, err := ParseMessage(raw)
 		assert.Equal(t, ErrInvalidMessage, err)
 	})
+
+	t.Run("twitch init", func(t *testing.T) {
+		raw := ":tmi.twitch.tv 001 foobar :Welcome, GLHF!"
+		expected := &Message{
+			Prefix:   Prefix{Name: "tmi.twitch.tv"},
+			Command:  "001",
+			Params:   []string{"foobar"},
+			Trailing: "Welcome, GLHF!",
+			Raw:      raw,
+		}
+
+		m, err := ParseMessage(raw)
+		assert.NoError(t, err)
+		assert.Equal(t, expected, m)
+	})
 }
 
 func TestParseError(t *testing.T) {

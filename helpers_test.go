@@ -46,6 +46,11 @@ func TestStringFieldsHelper(t *testing.T) {
 			s:   "       ",
 			sep: ' ',
 		},
+		{
+			s:        "A ",
+			sep:      ' ',
+			expected: []string{"A"},
+		},
 	}
 
 	for _, test := range tests {
@@ -58,6 +63,35 @@ func TestStringFieldsHelper(t *testing.T) {
 		assert.Equal(t, test.expected, builtin, "expected should match string.Fields")
 
 		got := stringFields(test.s, test.sep)
-		assert.Equal(t, test.expected, got, "expected result")
+		assert.Equal(t, test.expected, got, "expected result with sep `%s`", string(test.sep))
+	}
+}
+
+func TestFastTrimHelper(t *testing.T) {
+	tests := []string{
+		"",
+		"A",
+		" A",
+		"  A",
+		" A ",
+		"  A ",
+		"  A  ",
+		" A  ",
+		"A ",
+		"A   ",
+		"foo bar",
+		"   foo bar ",
+		"ab ",
+		" ab ",
+		"ab",
+		" ab",
+		"a-b-c ",
+	}
+
+	for _, test := range tests {
+		expected := strings.Trim(test, " ")
+		actual := fastTrim(test, ' ')
+
+		assert.Equal(t, expected, actual, "test=`%s`", test)
 	}
 }
