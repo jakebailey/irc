@@ -14,7 +14,7 @@ before_install:
 
 script:
   - $GOPATH/bin/goveralls -service=travis-ci
-  - $GOPATH/bin/gometalinter ./... > gometalinter-report.out || true
+  - $GOPATH/bin/gometalinter --disable=gosec ./... > gometalinter-report.out || true
   - go test -json ./... > report.json
   - go test -coverprofile=coverage.out ./...
   - sonar-scanner

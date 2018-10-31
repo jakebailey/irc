@@ -13,8 +13,7 @@ type Mux struct {
 
 func NewMux() *Mux {
 	return &Mux{
-		m:        make(map[string]Handler),
-		notFound: HandlerFunc(func(context.Context, irc.Encoder, *irc.Message) {}),
+		m: make(map[string]Handler),
 	}
 }
 
@@ -40,7 +39,9 @@ func (mux *Mux) HandleMessage(ctx context.Context, e irc.Encoder, m *irc.Message
 		handler = mux.notFound
 	}
 
-	handler.HandleMessage(ctx, e, m)
+	if handler != nil {
+		handler.HandleMessage(ctx, e, m)
+	}
 }
 
 func (mux *Mux) NotFound(handler Handler) {
