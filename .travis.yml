@@ -2,7 +2,24 @@ language: go
 sudo: false
 go:
   - "1.x"
+
+addons:
+  sonarcloud:
+    organization: "jakebailey-github"
+    token:
+      secure: "Yw4yHGTnoPaa3tyoRNQvuNrgbHYnSN9AYxFrfntRkgI2rqauBUzfLOPfHRvpG9On9rQ7d8Zy9Ve8+nqGA56kw1tCKl7xAoQZA7tV5pN7slE3RvqG0hh05lPSK/dROjAcbe1awadA0oxUNydOajzRWuo+tqUevMJZS9cMv9uvGHFD9qJIkU7iLnXvxwT+JhgGsYmqKuay3ywJce8eBc+CfVFNJCkvIYsYSfIpKcH7jAfvp4wgsBLD6UI/9ghvOk8zI+D1V27rK3dbVnLS8PlmTmo8xx9YqjNIJvBxZiQJpigzBFuykt0nWWQ+uWmf/Dg7hhWWYGcgFJ4hOlNcnm7QWr/D4m7XqNActY7YeaZPo2/lU7CU6AMjDepQ9IaPHCXa0nHqRIohAfmfZ58PKRFTPHcL/zBpFBNSq1L2E2eWTjK5IFToJguqN7zruEyeEKLEMPZdfDNUsexNP3vuzqCczDjpkz0MeVSkt3mmDRz+Ag5/mneYjX7xr4TqJsgUDqtnIgVueZhfZJ7WqbtPcat0iuO11rIE2VDREJnViSLWUhKX4ieUKv16Izt6fbeLvQ/uGTlMzSJPos554yqrdIa6UQMcm2pDjRTa/txSSlJaY77wcBbFvf7jhj++0dMVocyznnmSzBTem33K0ldwmSycDsG8POf4L7eOWrvBFZ+U1tU="
+
 before_install:
   - go get github.com/mattn/goveralls
+  - curl -L https://git.io/vp6lP | BINDIR=${GOPATH=$HOME/go}/bin bash
+
 script:
   - $GOPATH/bin/goveralls -service=travis-ci
+  - $GOPATH/bin/gometalinter ./... > gometalinter-report.out || true
+  - go test -json ./... > report.json
+  - go test -coverprofile=coverage.out ./...
+  - sonar-scanner
+
+cache:
+  directories:
+    - '$HOME/.sonar/cache'
