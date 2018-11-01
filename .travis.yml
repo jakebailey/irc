@@ -4,26 +4,12 @@ go:
   - "1.x"
   - "tip"
 
-addons:
-  sonarcloud:
-    organization: "jakebailey-github"
-    token: $SONAR_TOKEN
-
 before_install:
   - go get github.com/mattn/goveralls
-  - curl -L https://git.io/vp6lP | BINDIR=${GOPATH=$HOME/go}/bin bash
 
 script:
-  - $GOPATH/bin/goveralls -service=travis-ci
-  - $GOPATH/bin/gometalinter --disable=gosec ./... > gometalinter-report.out || true
-  - go test -json ./... > report.json
-  - go test -race -coverprofile=coverage.out ./...
+  - $GOPATH/bin/goveralls -service=travis-ci -race -covermode=atomic
   - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
-  - sonar-scanner
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-
-cache:
-  directories:
-    - '$HOME/.sonar/cache'
