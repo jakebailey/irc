@@ -2,17 +2,17 @@ language: go
 
 go:
   - "1.x"
-  - "tip"
+  # - "tip"
 
 os:
   - linux
   - osx
   - windows
 
-matrix:
-  allow_failures:
-    - go: tip
-  fast_finish: true
+# matrix:
+#   allow_failures:
+#     - go: tip
+#   fast_finish: true
 
 before_install:
   - go get -v -u github.com/mattn/goveralls
