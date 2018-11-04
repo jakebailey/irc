@@ -14,11 +14,10 @@ matrix:
     - go: tip
   fast_finish: true
 
-jobs:
-  include:
-    - stage: coverage
-      go: "1.x"
-      before_install:
-        - go get -v -u github.com/mattn/goveralls
-      script:
-        - $GOPATH/bin/goveralls -service=travis-ci -race -covermode=atomic ./...
+before_install:
+  - go get -v -u github.com/mattn/goveralls
+script:
+  - $GOPATH/bin/goveralls -service=travis-ci -race -covermode=atomic -parallel
+
+notifications:
+  webhooks: https://coveralls.io/webhook
