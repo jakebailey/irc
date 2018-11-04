@@ -1,15 +1,24 @@
 language: go
-sudo: false
+
 go:
   - "1.x"
   - "tip"
 
-before_install:
-  - go get github.com/mattn/goveralls
+os:
+  - linux
+  - osx
+  - windows
 
-script:
-  - $GOPATH/bin/goveralls -service=travis-ci -race -covermode=atomic
-  - go test -race -coverprofile=coverage.txt -covermode=atomic ./...
+matrix:
+  allow_failures:
+    - go: tip
+  fast_finish: true
 
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+jobs:
+  include:
+    - stage: coverage
+      go: "1.x"
+      before_install:
+        - go get -v -u github.com/mattn/goveralls
+      script:
+        - $GOPATH/bin/goveralls -service=travis-ci -race -covermode=atomic ./...
