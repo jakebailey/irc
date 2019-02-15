@@ -1,18 +1,17 @@
 package irc
 
 import (
-	"errors"
 	"strings"
 )
 
 var (
 	// ErrEmptyMessage is returned when the parser encounters an empty message.
-	ErrEmptyMessage = errors.New("empty message")
+	ErrEmptyMessage = &ParseError{"empty message"}
 
 	// ErrInvalidMessage is returned when the parser encounters an invalid message.
 	// This error is likely to be replaced with a more helpful error (encoding something
 	// like where the error occurred).
-	ErrInvalidMessage = errors.New("invalid message")
+	ErrInvalidMessage = &ParseError{"invalid message"}
 )
 
 // Parse parses a string into a message. All fields of the message struct

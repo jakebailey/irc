@@ -347,6 +347,7 @@ func TestParseError(t *testing.T) {
 	for _, test := range tests {
 		_, err := ParseMessage(test.raw)
 		assert.Equal(t, test.err, err, "raw = `%s`", test.raw)
+		assert.EqualError(t, err, test.err.Error(), "raw = `%s`", test.raw)
 	}
 }
 
