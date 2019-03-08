@@ -104,3 +104,16 @@ func BenchmarkEncodeBytes(b *testing.B) {
 		m.Bytes()
 	}
 }
+
+func BenchmarkEncodeString(b *testing.B) {
+	m, err := ParseMessage(rawTwitch)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.SetBytes(int64(len(rawTwitch)))
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		m.String()
+	}
+}
