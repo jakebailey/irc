@@ -3,6 +3,7 @@ package irc
 import (
 	"io"
 	"strings"
+	"unicode/utf8"
 )
 
 // Hand written string.Fields, much faster than string.FieldsFunc.
@@ -118,36 +119,55 @@ func tagEscapeWrite(w stringWriter, s string) (n int, err error) {
 	return w.WriteString(s)
 }
 
+var escapableSet = [256]bool{
+	';':  true,
+	' ':  true,
+	'\n': true,
+	'\r': true,
+	'\\': true,
+}
+
 func containsEscapable(s string) bool {
 	for _, r := range s {
-		switch r {
-		case ';', ' ', '\n', '\r', '\\':
+		if 0 <= r && r < utf8.RuneSelf && escapableSet[byte(r)] {
 			return true
 		}
 	}
 	return false
 }
 
+var escapableCounts = [256]int{
+	';':  1,
+	' ':  1,
+	'\n': 1,
+	'\r': 1,
+	'\\': 1,
+}
+
 func countEscapeable(s string) int {
 	count := 0
 
 	for _, r := range s {
-		switch r {
-		case ';', ' ', '\n', '\r', '\\':
-			count++
+		if 0 <= r && r < utf8.RuneSelf {
+			count += escapableCounts[byte(r)]
 		}
 	}
 
 	return count
 }
 
+var unescapeableSet = [256]bool{
+	':':  true,
+	's':  true,
+	'n':  true,
+	'r':  true,
+	'\\': true,
+}
+
 func containsUnescapeable(s string) bool {
 	bi := strings.IndexByte(s, '\\') + 1
 	if bi != 0 && bi < len(s) {
-		switch s[bi] {
-		case ':', 's', 'n', 'r', '\\':
-			return true
-		}
+		return unescapeableSet[s[bi]]
 	}
 
 	return false
