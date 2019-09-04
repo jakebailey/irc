@@ -1,24 +1,32 @@
+dist: xenial
+
 language: go
 
-go:
-  - "1.x"
-  # - "tip"
+matrix:
+  include:
+    - go: "1.12.x"
+      env: GO111MODULE=on
+    - go: "1.13.x"
+      env: GO111MODULE=on COVERAGE=true
+    - go: "tip"
+      env: GO111MODULE=on
+  allow_failures:
+    - go: "1.12.x"
+      env: GO111MODULE=on
+    - go: "tip"
+      env: GO111MODULE=on
+  fast_finish: true
 
-os:
-  - linux
-  - osx
-  - windows
-
-# matrix:
-#   allow_failures:
-#     - go: tip
-#   fast_finish: true
+cache:
+  directories:
+    - $GOPATH/pkg
+    - $HOME/.cache/go-build
 
 before_install:
-  - go get -v -u github.com/mattn/goveralls
-script:
-  - go test -race -covermode=atomic -coverprofile=cover.out ./...
-  - $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out -parallel
+  - GO111MODULE=off go get -v -u github.com/mattn/goveralls
 
-notifications:
-  webhooks: https://coveralls.io/webhook
+script:
+  - go mod tidy
+  - test -z "$(git status --porcelain go.mod go.sum)"
+  - go test -race -covermode=atomic -coverprofile=cover.out ./...
+  - if [ "$COVERAGE" = true ]; then $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out; fi
